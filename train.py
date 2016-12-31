@@ -33,7 +33,7 @@ optparser.add_option(
     help="Tagging scheme (IOB or IOBES)"
 )
 optparser.add_option(
-    "-l", "--lower", default="0",
+    "-l", "--lower", default="1",
     type='int', help="Lowercase words (this will not affect character inputs)"
 )
 optparser.add_option(
@@ -73,7 +73,7 @@ optparser.add_option(
     type='int', help="Load all embeddings"
 )
 optparser.add_option(
-    "-a", "--cap_dim", default="0",
+    "-a", "--cap_dim", default="1",
     type='int', help="Capitalization feature dimension (0 to disable)"
 )
 optparser.add_option(
@@ -91,6 +91,10 @@ optparser.add_option(
 optparser.add_option(
     "-r", "--reload", default="0",
     type='int', help="Reload the last saved model"
+)
+optparser.add_option(
+    "-m", "--model_name", default=None,
+     help="Reload the last saved model"
 )
 opts = optparser.parse_args()[0]
 
@@ -111,6 +115,7 @@ parameters['cap_dim'] = opts.cap_dim
 parameters['crf'] = opts.crf == 1
 parameters['dropout'] = opts.dropout
 parameters['lr_method'] = opts.lr_method
+parameters['model_name'] = opts.model_name
 
 # Check parameters validity
 assert os.path.isfile(opts.train)
@@ -200,7 +205,7 @@ if opts.reload:
 #
 singletons = set([word_to_id[k] for k, v
                   in dico_words_train.items() if v == 1])
-n_epochs = 100  # number of epochs over the training set
+n_epochs = 10  # number of epochs over the training set
 freq_eval = 1000  # evaluate on dev every freq_eval steps
 best_dev = -np.inf
 best_test = -np.inf
