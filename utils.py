@@ -9,12 +9,16 @@ models_path = "./models"
 eval_path = "./evaluation"
 eval_temp = os.path.join(eval_path, "temp")
 eval_script = os.path.join(eval_path, "conlleval")
+eval_run_script = 'perl ' + eval_script
 
 
 def get_name(parameters):
     """
     Generate a model name from its parameters.
     """
+    if parameters.get('model_name') is not None:
+        return parameters['model_name']
+    
     l = []
     for k, v in parameters.items():
         if type(v) is str and "/" in v:
@@ -250,7 +254,7 @@ def evaluate(parameters, f_eval, raw_sentences, parsed_sentences,
     scores_path = os.path.join(eval_temp, "eval.%i.scores" % eval_id)
     with codecs.open(output_path, 'w', 'utf8') as f:
         f.write("\n".join(predictions))
-    os.system("%s < %s > %s" % (eval_script, output_path, scores_path))
+    os.system("%s < %s > %s" % (eval_run_script, output_path, scores_path))
 
     # CoNLL evaluation results
     eval_lines = [l.rstrip() for l in codecs.open(scores_path, 'r', 'utf8')]
@@ -279,4 +283,5 @@ def evaluate(parameters, f_eval, raw_sentences, parsed_sentences,
     )
 
     # F1 on all entities
+    print eval_lines
     return float(eval_lines[1].strip().split()[-1])
